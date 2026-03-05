@@ -12,10 +12,7 @@ from tools.treesitter_tools import parse_code_structure as _parse_structure, fin
 from tools.dependency_tools import scan_maven_dependencies as _scan_maven, scan_nuget_dependencies as _scan_nuget
 
 
-mcp = FastMCP(
-    "Code Analysis MCP Server",
-    stateless_http=True,
-)
+mcp = FastMCP("Code Analysis MCP Server")
 
 
 # ---------------------------------------------------------------------------
@@ -130,4 +127,21 @@ def scan_nuget_dependencies(
 # ASGI app for deployment
 # ---------------------------------------------------------------------------
 
-app = mcp.http_app()
+import starlette.responses
+
+_mcp_app = mcp.http_app(stateless_http=True)
+
+
+async def health(request):
+    return starlette.responses.JSONResponse({"status": "healthy", "tools": 6})
+
+
+from starlette.routing import Route
+from starlette.applications import Starlette
+
+app = Starlette(
+    routes=[
+        Route("/health", health),
+    ],
+)
+app.mount("/", _mcp_app)
