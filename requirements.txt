@@ -1,0 +1,5 @@
+fastmcp>=3.0.0
+semgrep
+tree-sitter>=0.23.0
+tree-sitter-java>=0.23.0
+tree-sitter-c-sharp>=0.23.0

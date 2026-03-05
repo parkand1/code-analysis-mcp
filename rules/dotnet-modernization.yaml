@@ -1,0 +1,122 @@
+rules:
+  - id: system-web-usage
+    pattern: |
+      using System.Web;
+    message: >
+      System.Web namespace detected. This is ASP.NET Framework-specific and
+      not available in ASP.NET Core / .NET 10. Migrate to ASP.NET Core
+      middleware and built-in features.
+    languages: [csharp]
+    severity: ERROR
+    metadata:
+      category: modernization
+      migration: aspnet-core
+
+  - id: system-web-mvc
+    pattern: |
+      using System.Web.Mvc;
+    message: >
+      System.Web.Mvc detected (ASP.NET MVC 5). Migrate to
+      Microsoft.AspNetCore.Mvc for .NET 10 compatibility.
+    languages: [csharp]
+    severity: ERROR
+    metadata:
+      category: modernization
+      migration: aspnet-core
+
+  - id: httpcontext-current
+    pattern: |
+      HttpContext.Current
+    message: >
+      HttpContext.Current is not available in ASP.NET Core. Use dependency
+      injection with IHttpContextAccessor instead.
+    languages: [csharp]
+    severity: ERROR
+    metadata:
+      category: modernization
+      migration: aspnet-core
+
+  - id: configuration-manager
+    pattern: |
+      ConfigurationManager.$METHOD(...)
+    message: >
+      ConfigurationManager usage detected. Migrate to IConfiguration
+      with appsettings.json (ASP.NET Core pattern).
+    languages: [csharp]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: configuration
+
+  - id: webclient-usage
+    pattern: |
+      new WebClient(...)
+    message: >
+      WebClient is obsolete. Migrate to HttpClient with IHttpClientFactory
+      for proper connection pooling and lifecycle management.
+    languages: [csharp]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: http-client
+
+  - id: wcf-service-contract
+    pattern: |
+      [ServiceContract]
+    message: >
+      WCF [ServiceContract] detected. Migrate to CoreWCF (quick path) or
+      gRPC (recommended for new development) for .NET 10 compatibility.
+    languages: [csharp]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: wcf-to-grpc
+
+  - id: wcf-operation-contract
+    pattern: |
+      [OperationContract]
+    message: >
+      WCF [OperationContract] detected. This service method needs migration
+      to CoreWCF or gRPC service definition.
+    languages: [csharp]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: wcf-to-grpc
+
+  - id: webforms-page
+    pattern: |
+      class $CLASS : System.Web.UI.Page { ... }
+    message: >
+      ASP.NET Web Forms Page detected. Migrate to Blazor Server components
+      or ASP.NET Core MVC Razor views.
+    languages: [csharp]
+    severity: ERROR
+    metadata:
+      category: modernization
+      migration: webforms-to-blazor
+
+  - id: sql-connection-direct
+    pattern: |
+      new SqlConnection(...)
+    message: >
+      Direct SqlConnection usage detected. Consider using Entity Framework
+      Core or Dapper with dependency injection for better testability
+      and connection management.
+    languages: [csharp]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: data-access
+
+  - id: windows-forms
+    pattern: |
+      using System.Windows.Forms;
+    message: >
+      Windows Forms detected. This cannot run on Linux. Consider migration
+      to Blazor, MAUI, or a web-based UI for cross-platform deployment.
+    languages: [csharp]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: ui-framework

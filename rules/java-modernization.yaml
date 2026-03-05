@@ -1,0 +1,116 @@
+rules:
+  - id: javax-namespace-usage
+    pattern: |
+      import javax.$PACKAGE.$CLASS;
+    message: >
+      javax.* namespace detected. Java 17+ with Jakarta EE requires migration
+      to jakarta.* namespace (e.g., javax.servlet → jakarta.servlet).
+    languages: [java]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: javax-to-jakarta
+
+  - id: sun-misc-unsafe
+    pattern: |
+      import sun.misc.$CLASS;
+    message: >
+      sun.misc.* API usage detected. These internal APIs are removed or
+      restricted in Java 17+. Use java.lang.invoke.VarHandle or
+      java.util.concurrent.atomic as replacements.
+    languages: [java]
+    severity: ERROR
+    metadata:
+      category: modernization
+      migration: removed-api
+
+  - id: java-util-date-usage
+    pattern: |
+      new Date(...)
+    message: >
+      java.util.Date usage detected. Migrate to java.time API
+      (LocalDate, LocalDateTime, Instant) introduced in Java 8.
+    languages: [java]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: date-time-api
+
+  - id: aws-sdk-v1-import
+    pattern: |
+      import com.amazonaws.$REST;
+    message: >
+      AWS SDK for Java v1 detected. Migrate to AWS SDK v2
+      (software.amazon.awssdk.*) using AWS Transform.
+    languages: [java]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: aws-sdk-upgrade
+
+  - id: synchronized-block
+    pattern: |
+      synchronized ($LOCK) { ... }
+    message: >
+      synchronized block detected. Consider using java.util.concurrent
+      utilities (ReentrantLock, ConcurrentHashMap, atomic classes) for
+      better performance and scalability.
+    languages: [java]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: concurrency
+
+  - id: vector-usage
+    pattern: |
+      new Vector<$TYPE>(...)
+    message: >
+      java.util.Vector is a legacy collection with synchronization overhead.
+      Replace with ArrayList (single-threaded) or CopyOnWriteArrayList
+      (concurrent access).
+    languages: [java]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: legacy-collections
+
+  - id: hashtable-usage
+    pattern: |
+      new Hashtable<$K, $V>(...)
+    message: >
+      java.util.Hashtable is a legacy collection. Replace with HashMap
+      (single-threaded) or ConcurrentHashMap (concurrent access).
+    languages: [java]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: legacy-collections
+
+  - id: spring-boot-1x-annotation
+    pattern: |
+      @SpringBootApplication
+    message: >
+      Spring Boot application detected. Verify Spring Boot version is 3.x+
+      (requires Java 17+) for continued support and Jakarta EE compatibility.
+    languages: [java]
+    severity: INFO
+    metadata:
+      category: modernization
+      migration: spring-boot-upgrade
+
+  - id: ejb-annotation
+    patterns:
+      - pattern: |
+          @Stateless
+      - pattern: |
+          @Stateful
+      - pattern: |
+          @MessageDriven
+    message: >
+      EJB annotation detected. Consider migrating to Spring Boot or
+      CDI-based architecture for containerized deployment.
+    languages: [java]
+    severity: WARNING
+    metadata:
+      category: modernization
+      migration: ejb-to-spring
